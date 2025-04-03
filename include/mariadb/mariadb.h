@@ -15,7 +15,6 @@
 namespace nodepp { namespace _mariadb_ { GENERATOR( cb ){
 protected:
     
-    map_t<string_t,string_t> arguments;
     array_t<string_t> col;
     int num_fields, x;
     MYSQL_ROW row;
@@ -31,10 +30,14 @@ public:
         for( x=0; x<num_fields; x++ )
            { col.push( row[x] ); }
 
-        while((row=mysql_fetch_row(res))){
-          for( x=0; x<num_fields; x++ ){
-               arguments[ col[x] ] = row[x] ? row[x] : "NULL"; 
-        } cb ( arguments ); coNext; }
+        while( (row=mysql_fetch_row(res)) ){ do {
+            auto object = map_t<string_t,string_t>();
+            
+            for( x=0; x<num_fields; x++ ){
+                 object[ col[x] ] = row[x] ? row[x] : "NULL"; 
+            }
+            
+        cb( object ); } while(0); coNext; }
 
         mysql_free_result( res );
 
