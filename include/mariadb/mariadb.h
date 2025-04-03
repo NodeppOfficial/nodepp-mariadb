@@ -23,7 +23,7 @@ protected:
 public:
 
     template< class T, class U, class V, class Q > coEmit( T& fd, U& res, V& cb, Q& self ){
-    coStart 
+    gnStart 
 
         num_fields = mysql_num_fields( res ); 
         row        = mysql_fetch_row( res );
@@ -38,7 +38,7 @@ public:
 
         mysql_free_result( res );
 
-    coStop
+    gnStop
     }
 
 };}}
