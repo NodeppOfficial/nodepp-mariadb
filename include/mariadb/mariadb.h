@@ -14,7 +14,7 @@
 
 namespace nodepp { namespace _mariadb_ { GENERATOR( cb ){
 protected:
-    
+
     array_t<string_t> col;
     int num_fields, x;
     MYSQL_ROW row;
@@ -22,21 +22,20 @@ protected:
 public:
 
     template< class T, class U, class V, class Q > coEmit( T& fd, U& res, V& cb, Q& self ){
-    gnStart 
+    gnStart
 
-        num_fields = mysql_num_fields( res ); 
-        row        = mysql_fetch_row( res );
+        num_fields = mysql_num_fields( res );
+        row        = mysql_fetch_row ( res );
 
         for( x=0; x<num_fields; x++ )
            { col.push( row[x] ); }
 
         while( (row=mysql_fetch_row(res)) ){ do {
             auto object = map_t<string_t,string_t>();
-            
-            for( x=0; x<num_fields; x++ ){
-                 object[ col[x] ] = row[x] ? row[x] : "NULL"; 
-            }
-            
+
+            for( x=0; x<num_fields; x++ )
+               { object[ col[x] ] = row[x] ? row[x] : "NULL"; }
+
         cb( object ); } while(0); coNext; }
 
         mysql_free_result( res );
@@ -61,26 +60,26 @@ protected:
     };  ptr_t<NODE> obj;
 
 public:
-    
+
     virtual ~mariadb_t() noexcept {
         if( obj.count() > 1 || obj->fd == nullptr ){ return; }
         if( obj->state == 0 ){ return; } free();
     }
-    
+
     /*─······································································─*/
 
     virtual void free() const noexcept {
         if( obj->fd == nullptr ){ return; }
         if( obj->state == 0 )   { return; }
         mysql_close( obj->fd );
-        obj->state = 0; 
+        obj->state = 0;
     }
-    
+
     /*─······································································─*/
-    
+
 #ifdef NODEPP_SSL
     mariadb_t ( string_t uri, string_t name, ssl_t* ssl ) : obj( new NODE ) {
-        
+
         obj->fd = mysql_init(NULL); if( obj->fd == nullptr )
           { process::error("Error: Can't Start MySQL"); }
 
@@ -98,11 +97,11 @@ public:
 
     }
 #endif
-    
+
     /*─······································································─*/
-    
+
     mariadb_t ( string_t uri, string_t name ) : obj( new NODE ) {
-        
+
         obj->fd = mysql_init(NULL); if( obj->fd == nullptr )
           { process::error("Error: Can't Start MySQL"); }
 
@@ -116,9 +115,9 @@ public:
         }
 
     }
-    
+
     mariadb_t () : obj( new NODE ) { obj->state = 0; }
-    
+
     /*─······································································─*/
 
     void exec( const string_t& cmd, const function_t<void,sql_item_t>& cb ) const {
