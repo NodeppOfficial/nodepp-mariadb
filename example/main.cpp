@@ -1,13 +1,13 @@
 #include <nodepp/nodepp.h>
-#include <sqlite.h>
+#include <mariadb/mariadb.h>
 
 using namespace nodepp;
 
 void onMain() {
 
-    sqlite_t db ("tcp://usr:pass@localhost:8000","dbName");
+    mariadb_t db ("db://usr:pass@localhost:8000","dbName");
 
-    db.exec(R"(
+    db.await(R"(
         CREATE TABLE COMPANY(
         ID INT PRIMARY KEY     NOT NULL,
         NAME           TEXT    NOT NULL,
@@ -16,29 +16,29 @@ void onMain() {
         SALARY         REAL );
     )");
 
-    db.exec(R"(
+    db.await(R"(
         INSERT INTO COMPANY ( ID, NAME, AGE, ADDRESS, SALARY )
         VALUES (1, 'Paul', 32, 'California', 20000.00 );
     )");
 
-    db.exec(R"(
+    db.await(R"(
         INSERT INTO COMPANY ( ID, NAME, AGE, ADDRESS, SALARY )
         VALUES (2, 'John', 32, 'California', 20000.00 );
     )");
 
-    db.exec(R"(
+    db.await(R"(
         INSERT INTO COMPANY ( ID, NAME, AGE, ADDRESS, SALARY )
         VALUES (3, 'Mery', 32, 'California', 20000.00 );
     )");
 
-    db.exec(R"(
+    db.await(R"(
         INSERT INTO COMPANY ( ID, NAME, AGE, ADDRESS, SALARY )
         VALUES (4, 'Pipi', 32, 'California', 20000.00 );
     )");
 
-    db.exec("SELECT * from COMPANY",[]( object_t args ){
+    db.emit("SELECT * from COMPANY",[]( sql_item_t args ){
         for( auto &x: args.keys() ){
-             console::log( x, "->", args[x].as<string_t>() );
+             console::log( x, "->", args[x] );
         }
     });
 
